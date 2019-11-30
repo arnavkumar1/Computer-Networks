@@ -1,0 +1,22 @@
+#! /bin/bash
+hostnames=(ec2-18-222-189-83.us-east-2.compute.amazonaws.com
+    ec2-18-216-216-71.us-east-2.compute.amazonaws.com
+    ec2-18-220-185-191.us-east-2.compute.amazonaws.com)
+
+username=$1
+keyfile=$2
+
+for host in "${hostnames[@]}"
+do
+    echo "Deploy " $host
+    echo "username:" $username
+    ssh -i $keyfile $username@$host 'mkdir ~/scripts/'
+    scp -i $keyfile httpserver* $username@$host:~/scripts/
+done
+
+dnsserver=ec2-18-220-138-231.us-east-2.compute.amazonaws.com
+echo "Deploy " $dnsserver
+
+ssh -i $keyfile $username@$dnsserver 'mkdir ~/scripts/'
+scp -i $keyfile dnsserver* $username@$dnsserver:~/scripts/
+scp -i $keyfile findnearestserver.py $username@$dnsserver:~/scripts/
